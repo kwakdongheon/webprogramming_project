@@ -19,4 +19,15 @@ try {
     // 연결 실패 시 에러 메시지 출력 후 종료
     die("데이터베이스 연결 실패: " . $e->getMessage());
 }
+
+// MySQLi 연결 (일부 파일에서 사용)
+$conn = new mysqli($host, $username, $password, $db_name);
+
+// 연결 확인
+if ($conn->connect_error) {
+    die("MySQLi 연결 실패: " . $conn->connect_error);
+}
+
+// UTF-8 설정
+$conn->set_charset("utf8mb4");
 ?>

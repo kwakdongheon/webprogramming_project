@@ -41,6 +41,11 @@ try {
         INSERT INTO posts (user_id, title, content, category, rating, date, place_name, place_address) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     ");
+    
+    if ($stmt === false) {
+        throw new Exception("게시글 저장 준비 실패: " . $conn->error);
+    }
+    
     $stmt->bind_param(
         "isssisss", 
         $user_id, 
@@ -52,8 +57,13 @@ try {
         $place_name, 
         $place_address
     );
-    $stmt->execute();
+    
+    if (!$stmt->execute()) {
+        throw new Exception("게시글 저장 실패: " . $stmt->error);
+    }
+    
     $post_id = $conn->insert_id;
+    $stmt->close();
 
     // 사진 업로드 처리 (최대 2장)
     if (isset($_FILES['photos']) && !empty($_FILES['photos']['name'][0])) {
@@ -102,8 +112,18 @@ try {
             if (move_uploaded_file($tmp_name, $upload_path)) {
                 // DB에 사진 경로 저장
                 $photo_stmt = $conn->prepare("INSERT INTO photos (post_id, file_path) VALUES (?, ?)");
+                
+                if ($photo_stmt === false) {
+                    throw new Exception("사진 정보 저장 준비 실패: " . $conn->error);
+                }
+                
                 $photo_stmt->bind_param("is", $post_id, $upload_path);
-                $photo_stmt->execute();
+                
+                if (!$photo_stmt->execute()) {
+                    throw new Exception("사진 정보 저장 실패: " . $photo_stmt->error);
+                }
+                
+                $photo_stmt->close();
                 $uploaded_count++;
             }
         }
