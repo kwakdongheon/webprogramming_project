@@ -8,8 +8,7 @@ webprogramming_project/
 │   └── fetch_day.php            # 특정 날짜의 게시글 목록 조회
 │
 ├── includes/                     # 공통 포함 파일
-│   ├── db.php                   # 데이터베이스 연결
-│   └── auth_guard.php           # 로그인 세션 확인
+│   └── db.php                   # 데이터베이스 연결
 │
 ├── public/                       # 공개 리소스
 │   ├── css/
@@ -26,14 +25,17 @@ webprogramming_project/
 │   └── post_edit.php            # 게시글 수정 폼
 │
 ├── index.php                     # 메인 페이지 (캘린더)
-├── login_process.php            # 로그인 처리
-├── register_process.php         # 회원가입 처리
-├── write_process.php            # 게시글 작성 처리 (사진 업로드 포함)
-├── post_edit_process.php        # 게시글 수정 처리
-├── post_delete.php              # 게시글 삭제 처리
-├── logout.php                   # 로그아웃
-├── posts.php                    # 게시글 목록 (선택적)
-└── README.md                     # 프로젝트 개요 및 계획서
+├── login_process.php             # 로그인 처리
+├── register_process.php          # 회원가입 처리
+├── write_process.php             # 게시글 작성 처리 (사진 업로드 포함)
+├── post_edit_process.php         # 게시글 수정 처리
+├── post_delete.php               # 게시글 삭제 처리
+├── logout.php                    # 로그아웃
+├── README.md                     # 프로젝트 개요 및 계획서
+├── .gitignore                    # 민감/임시 파일 제외 설정
+├── DEPLOY.md                     # 배포 가이드 (InfinityFree 포함)
+├── config.ini.example            # 설정 예시(로컬/운영 값 템플릿)
+└── config.ini.production         # 운영용 설정 샘플(민감정보 없이 템플릿)
 ```
 
 ## 주요 기능 구현 현황
