@@ -15,7 +15,7 @@
 <body>
     <h2>로그인</h2>
     
-    <form action="login_process.php" method="POST">
+    <form action="../login_process.php" method="POST">
         <label>이메일:</label>
         <input type="email" name="email" required placeholder="가입한 이메일 입력">
         

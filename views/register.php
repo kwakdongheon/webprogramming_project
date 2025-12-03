@@ -17,7 +17,7 @@
     <h2>회원가입</h2>
     <p>나만의 일상을 기록하기 위해 가입해주세요.</p>
     
-    <form action="register_process.php" method="POST">
+    <form action="../register_process.php" method="POST">
         <label>사용자 이름 (Username):</label>
         <input type="text" name="username" required placeholder="예: 홍길동">
         

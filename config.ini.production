@@ -1,0 +1,8 @@
+; InfinityFree 서버 설정
+DB_HOST=sql112.infinityfree.com
+DB_NAME=if0_40576741_lifelog
+DB_USER=if0_40576741
+DB_PASS=여기에_비밀번호_입력
+
+APP_ENV=production
+APP_DEBUG=false
