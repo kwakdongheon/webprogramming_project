@@ -1,11 +1,6 @@
 <?php
-session_start();
+require_once __DIR__ . '/../includes/auth_guard.php';
 require_once __DIR__ . '/../includes/db.php';
-
-if (!isset($_SESSION['user_id'])) {
-    echo "<script>alert('로그인이 필요합니다.'); window.location.href='login.php';</script>";
-    exit;
-}
 
 $id = $_GET['id'];
 $user_id = $_SESSION['user_id'];

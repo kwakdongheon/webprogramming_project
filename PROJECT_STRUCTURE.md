@@ -8,7 +8,8 @@ webprogramming_project/
 │   └── fetch_day.php            # 특정 날짜의 게시글 목록 조회
 │
 ├── includes/                     # 공통 포함 파일
-│   └── db.php                   # 데이터베이스 연결
+│   ├── db.php                   # 데이터베이스 연결
+│   └── auth_guard.php           # 로그인 세션 확인(공통 가드)
 │
 ├── public/                       # 공개 리소스
 │   ├── css/

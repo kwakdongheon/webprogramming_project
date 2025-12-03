@@ -1,4 +1,18 @@
 <?php
+// 공통 인증 가드: 세션 시작 및 로그인 여부 확인
+// 이 파일을 include하면 로그인되지 않은 사용자를 로그인 페이지로 안내합니다.
+
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+
+if (!isset($_SESSION['user_id'])) {
+    // 호출 위치에 따라 상대경로가 다를 수 있으므로, 기본적으로 루트 기준 로그인 페이지로 보냄
+    // 루트에서 include될 경우: views/login.php
+    echo "<script>alert('로그인이 필요합니다.'); window.location.href='views/login.php';</script>";
+    exit;
+}
+<?php
 // auth_guard.php: 로그인 여부를 확인하는 보안관
 // 이 파일은 단독으로 실행되지 않고, 다른 페이지에 포함(require)되어 작동합니다.
 
