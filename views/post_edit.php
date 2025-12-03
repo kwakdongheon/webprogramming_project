@@ -1,6 +1,11 @@
 <?php
-require_once 'auth_guard.php';
-require_once 'db.php';
+session_start();
+require_once __DIR__ . '/../includes/db.php';
+
+if (!isset($_SESSION['user_id'])) {
+    echo "<script>alert('로그인이 필요합니다.'); window.location.href='login.php';</script>";
+    exit;
+}
 
 $id = $_GET['id'];
 $stmt = $pdo->prepare("SELECT * FROM posts WHERE id=? AND user_id=?");
@@ -19,7 +24,7 @@ if(!$post) die("❌ 권한 없음");
 <body>
 <h1>✏️ 게시글 수정</h1>
 
-<form action="post_edit_process.php" method="POST">
+<form action="../post_edit_process.php" method="POST">
     <input type="hidden" name="id" value="<?=$post['id']?>">
 
     <label>제목:</label><br>
@@ -35,6 +40,6 @@ if(!$post) die("❌ 권한 없음");
 </form>
 
 <br>
-<a href="posts.php">⬅ 취소</a>
+<a href="../posts.php">⬅ 취소</a>
 </body>
 </html>

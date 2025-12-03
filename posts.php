@@ -1,6 +1,11 @@
 <?php
-require_once 'auth_guard.php';
-require_once 'db.php';
+session_start();
+require_once 'includes/db.php';
+
+if (!isset($_SESSION['user_id'])) {
+    echo "<script>alert('로그인이 필요합니다.'); window.location.href='views/login.php';</script>";
+    exit;
+}
 
 $user_id = $_SESSION['user_id'];
 $stmt = $pdo->prepare("SELECT * FROM posts WHERE user_id=? ORDER BY date DESC");
@@ -18,7 +23,7 @@ $posts = $stmt->fetchAll();
 <h2>📋 나의 기록들</h2>
 <hr>
 
-<a href="write_screen.php">✏️ 새 글 작성</a>
+<a href="views/write_screen.php">✏️ 새 글 작성</a>
 <br><br>
 
 <?php if(count($posts)===0): ?>
@@ -28,7 +33,7 @@ $posts = $stmt->fetchAll();
         <?php foreach($posts as $p): ?>
             <li>
                 <strong><?= $p['date'] ?></strong> | 
-                <a href="post_view.php?id=<?= $p['id'] ?>">
+                <a href="views/post_view.php?id=<?= $p['id'] ?>">
                     <?= htmlspecialchars($p['title'] ?: "[제목 없음]") ?>
                 </a> 
                 ⭐<?= $p['rating'] ?>
