@@ -34,10 +34,10 @@ $end_date = date('Y-m-t', strtotime($start_date)); // 해당 월의 마지막 �
 try {
     // 게시글이 있는 날짜(일) 추출
     $stmt = $conn->prepare("
-        SELECT DISTINCT DAY(date) as day 
+        SELECT DISTINCT DAY(`date`) as day 
         FROM posts 
         WHERE user_id = ? 
-        AND date BETWEEN ? AND ?
+        AND `date` BETWEEN ? AND ?
         ORDER BY day ASC
     ");
     

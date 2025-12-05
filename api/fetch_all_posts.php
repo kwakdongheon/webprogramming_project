@@ -1,16 +1,11 @@
 <?php
 /**
- * 특정 날짜의 게시글 목록 반환
- * GET params: date (YYYY-MM-DD)
+ * 사용자의 모든 게시글 반환
  * Response: JSON { "posts": [...] }
  */
 
 session_start();
 header('Content-Type: application/json; charset=utf-8');
-
-// 디버그 모드
-error_reporting(E_ALL);
-ini_set('display_errors', '0'); // JSON 응답 직전에 에러가 출력되지 않도록
 
 // 로그인 확인
 if (!isset($_SESSION['user_id'])) {
@@ -20,25 +15,18 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once '../includes/db.php';
 
-$date = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
 $user_id = $_SESSION['user_id'];
 
-// 날짜 형식 검증
-if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
-    echo json_encode(['error' => '잘못된 날짜 형식입니다.', 'posts' => [], 'debug' => $date], JSON_UNESCAPED_UNICODE);
-    exit;
-}
-
 try {
-    // 해당 날짜의 게시글 조회
+    // 사용자의 모든 게시글 조회
     $stmt = $conn->prepare("
-        SELECT id, title, content, category, rating, place_name, place_address, created_at
+        SELECT id, title, content, category, rating, place_name, place_address, created_at, `date`
         FROM posts 
-        WHERE user_id = ? AND `date` = ?
-        ORDER BY created_at DESC
+        WHERE user_id = ?
+        ORDER BY `date` DESC, created_at DESC
     ");
     
-    $stmt->bind_param("is", $user_id, $date);
+    $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
     
@@ -71,7 +59,7 @@ try {
             'place_name' => $row['place_name'],
             'place_address' => $row['place_address'],
             'images' => $images,
-            'canEdit' => true // 본인 게시글이므로 수정/삭제 가능
+            'date' => $row['date']
         ];
     }
     
@@ -81,9 +69,7 @@ try {
     http_response_code(500);
     echo json_encode([
         'error' => '데이터 조회 실패: ' . $e->getMessage(), 
-        'posts' => [],
-        'debug_date' => $date,
-        'debug_user_id' => $user_id
+        'posts' => []
     ], JSON_UNESCAPED_UNICODE);
 }
 

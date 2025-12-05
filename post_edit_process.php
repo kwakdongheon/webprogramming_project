@@ -12,6 +12,6 @@ $stmt->execute([$title, $content, $rating, $id, $_SESSION['user_id']]);
 
 echo "<script>
         alert('수정 완료!');
-        window.location.href='post_view.php?id=$id';
+        window.location.href='views/post_view.php?id=$id';
       </script>";
 ?>

@@ -2,34 +2,45 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LifeLog - 회원가입</title>
-    <style>
-        /* 간단한 스타일링 (나중에 CSS 파일로 분리 가능) */
-        body { font-family: sans-serif; padding: 20px; }
-        form { max-width: 300px; margin: 20px 0; }
-        label { display: block; margin-top: 10px; }
-        input { width: 100%; padding: 8px; margin-top: 5px; }
-        button { margin-top: 15px; padding: 10px; width: 100%; background: #4CAF50; color: white; border: none; cursor: pointer; }
-        button:hover { background: #45a049; }
-    </style>
+    <link rel="stylesheet" href="../public/css/calendar.css">
 </head>
 <body>
-    <h2>회원가입</h2>
-    <p>나만의 일상을 기록하기 위해 가입해주세요.</p>
-    
-    <form action="../register_process.php" method="POST">
-        <label>사용자 이름 (Username):</label>
-        <input type="text" name="username" required placeholder="예: 홍길동">
-        
-        <label>이메일 (Email):</label>
-        <input type="email" name="email" required placeholder="example@email.com">
-        
-        <label>비밀번호 (Password):</label>
-        <input type="password" name="password" required placeholder="비밀번호 입력">
-        
-        <button type="submit">가입하기</button>
-    </form>
-    
-    <p>이미 계정이 있으신가요? <a href="login.php">로그인 하러가기</a></p>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <div style="font-size: 3rem; margin-bottom: 10px;">👋</div>
+            <h2>회원가입</h2>
+            <p style="color:var(--text-sub); margin-bottom:20px;">나만의 소중한 일상을 기록해보세요.</p>
+            
+            <form action="../register_process.php" method="POST">
+                <div class="form-group">
+                    <label>사용자 이름 (닉네임)</label>
+                    <input type="text" name="username" class="auth-input" required placeholder="예: 라이프로거">
+                </div>
+
+                <div class="form-group">
+                    <label>이메일</label>
+                    <input type="email" name="email" class="auth-input" required placeholder="example@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>비밀번호</label>
+                    <input type="password" name="password" class="auth-input" required placeholder="비밀번호 설정">
+                </div>
+                
+                <button type="submit" class="btn btn-secondary full-width">가입하기</button>
+            </form>
+            
+            <div class="auth-link">
+                이미 계정이 있으신가요? <a href="login.php">로그인 하러가기</a>
+            </div>
+             <div class="auth-link">
+                <a href="../index.php">← 메인으로 돌아가기</a>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
