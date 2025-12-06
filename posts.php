@@ -20,7 +20,10 @@ $posts = $stmt->fetchAll();
     <!-- 헤더 -->
     <header>
         <div class="logo">
-            <a href="index.php"><h1>📒 LifeLog</h1></a>
+            <a href="index.php">
+                <img src="./public/images/logo.png" alt="LifeLog" class="logo-img">
+                <span class="logo-title">LifeLog</span>
+            </a>
         </div>
         <div class="user-info" style="display:flex; gap:20px; align-items:center;">
             <div class="view-toggle">
@@ -69,6 +72,16 @@ $posts = $stmt->fetchAll();
         <div id="listView" style="display:block; max-width: 1000px; margin: 40px auto; padding: 0 20px;">
             <h2 style="font-size: 2rem; color: var(--secondary); margin-bottom: 30px;">📋 나의 모든 기록</h2>
 
+            <!-- 카테고리 필터 -->
+            <div class="category-filter" style="margin-bottom: 20px;">
+                <button class="filter-btn active" onclick="filterListView('all')"전체</button>
+                <button class="filter-btn" onclick="filterListView('맛집')">🍴 맛집</button>
+                <button class="filter-btn" onclick="filterListView('카페')">☕ 카페</button>
+                <button class="filter-btn" onclick="filterListView('여행')">✈️ 여행</button>
+                <button class="filter-btn" onclick="filterListView('취미')">🎨 취미</button>
+                <button class="filter-btn" onclick="filterListView('일상')">📝 일상</button>
+            </div>
+
             <?php if(count($posts)===0): ?>
                 <div class="empty-state" style="margin-top: 60px;">
                     <div style="font-size: 4rem; margin-bottom: 20px;">📝</div>
@@ -76,9 +89,9 @@ $posts = $stmt->fetchAll();
                     <button class="btn btn-secondary" style="margin-top: 20px;" onclick="location.href='views/write_screen.php'">첫 기록 시작하기</button>
                 </div>
             <?php else: ?>
-                <div class="post-list" style="flex-direction: column; gap: 20px;">
+                <div class="post-list" id="postListContainer" style="flex-direction: column; gap: 20px;">
                     <?php foreach($posts as $p): ?>
-                        <div class="polaroid-card" style="min-width: 100%; max-width: 100%;">
+                        <div class="polaroid-card post-item" data-category="<?= htmlspecialchars($p['category']) ?>" style="min-width: 100%; max-width: 100%;">
                             <div class="card-header">
                                 <div class="card-title"><?= htmlspecialchars($p['title'] ?: "[제목 없음]") ?></div>
                                 <div class="card-meta">
@@ -139,6 +152,27 @@ $posts = $stmt->fetchAll();
                 calendarToggle.classList.remove('active');
                 listToggle.classList.add('active');
             }
+        }
+        
+        // 카테고리 필터링 함수
+        function filterListView(category) {
+            // 버튼 활성화 상태 변경
+            document.querySelectorAll('#listView .filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 모든 게시글 카드 가져오기
+            const posts = document.querySelectorAll('.post-item');
+            
+            posts.forEach(post => {
+                if (category === 'all') {
+                    post.style.display = 'block';
+                } else {
+                    const postCategory = post.getAttribute('data-category');
+                    post.style.display = postCategory === category ? 'block' : 'none';
+                }
+            });
         }
     </script>
 

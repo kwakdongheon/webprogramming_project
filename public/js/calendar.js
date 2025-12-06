@@ -10,6 +10,10 @@
     const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
     let viewDate = new Date(); // 현재 날짜 기준
     let selectedDateElem = null; // 현재 선택된 날짜 요소
+    
+    // 카테고리 필터링을 위한 전역 변수
+    let currentPosts = []; // 현재 로드된 게시글 저장
+    let activeCategory = 'all'; // 현재 선택된 카테고리
   
     function pad(n) { return n < 10 ? '0' + n : '' + n; }
   
@@ -96,75 +100,83 @@
         
         const data = await res.json();
         console.log('받은 데이터:', data);
-        const posts = data.posts || [];
+        currentPosts = data.posts || []; // 전역 변수에 저장
         
         if (!feedContainer) return; // 요소가 없으면 종료
 
-        if (posts.length === 0) {
-          feedContainer.innerHTML = `
-            <div class="empty-state">
-                <div style="font-size:3rem;">🍃</div>
-                <p>기록이 없는 날이에요.<br>새로운 추억을 남겨볼까요?</p>
-            </div>`;
-          return;
-        }
-  
-        feedContainer.innerHTML = ''; // 초기화
-  
-        // 카드 HTML 생성
-        posts.forEach(p => {
-          const card = document.createElement('div');
-          card.className = 'polaroid-card';
-          
-          // 헤더
-          let headerHtml = `
-            <div class="card-header">
-                <div class="card-title">${p.title || '무제'}</div>
-                <div class="card-meta">
-                    <span class="rating-star">${'★'.repeat(p.rating)}</span> | 
-                    <span>${p.category}</span>
-                </div>
-            </div>`;
-          
-          // 이미지
-          let imgHtml = '';
-          if (p.images && p.images.length > 0) {
-            imgHtml = `<div class="photo-scroller">`;
-            p.images.forEach(src => {
-                const finalSrc = src.startsWith('public/') ? src : `public/${src}`;
-                imgHtml += `<img src="${finalSrc}" alt="memory">`;
-            });
-            imgHtml += `</div>`;
-          }
-  
-          // 내용
-          let contentHtml = `<div class="card-content">${p.content}</div>`;
-          
-          // 장소
-          let placeHtml = '';
-          if(p.place_name) {
-              placeHtml = `<div style="margin-top:15px; font-size:0.9rem; color:#888;">📍 ${p.place_name}</div>`;
-          }
-  
-          // 버튼
-          let actionHtml = '';
-          if(p.canEdit) {
-              actionHtml = `
-                <div style="margin-top:20px; text-align:right;">
-                    <button class="btn btn-secondary" style="font-size:0.8rem; padding:6px 12px;" onclick="location.href='views/post_edit.php?id=${p.id}'">수정</button>
-                    <button class="btn btn-delete" style="font-size:0.8rem; padding:6px 12px;" onclick="if(confirm('정말 삭제할까요?')) location.href='post_delete.php?id=${p.id}'">삭제</button>
-                </div>
-              `;
-          }
-  
-          card.innerHTML = headerHtml + imgHtml + contentHtml + placeHtml + actionHtml;
-          feedContainer.appendChild(card);
-        });
+        // 필터 적용하여 렌더링
+        renderPosts(filterPosts(currentPosts, activeCategory));
   
       } catch (e) {
         console.error('fetch_day 오류:', e);
         if(feedContainer) feedContainer.innerHTML = `<div class="empty-state">오류가 발생했어요 😭<br><small>${e.message}</small></div>`;
       }
+    }
+    
+    // 카테고리 필터링 함수
+    function filterPosts(posts, category) {
+        if (category === 'all') return posts;
+        return posts.filter(post => post.category === category);
+    }
+    
+    // 게시글 렌더링 함수
+    function renderPosts(posts) {
+        if (!feedContainer) return;
+        
+        if (posts.length === 0) {
+            feedContainer.innerHTML = `
+                <div class="empty-state">
+                    <div style="font-size:3rem;">🍃</div>
+                    <p>해당 카테고리의 기록이 없습니다 📝</p>
+                </div>`;
+            return;
+        }
+        
+        feedContainer.innerHTML = '';
+        
+        posts.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'polaroid-card';
+            
+            let headerHtml = `
+                <div class="card-header">
+                    <div class="card-title">${p.title || '무제'}</div>
+                    <div class="card-meta">
+                        <span class="rating-star">${'★'.repeat(p.rating)}</span> | 
+                        <span>${p.category}</span>
+                    </div>
+                </div>`;
+            
+            let imgHtml = '';
+            if (p.images && p.images.length > 0) {
+                imgHtml = `<div class="photo-scroller">`;
+                p.images.forEach(src => {
+                    const finalSrc = src.startsWith('public/') ? src : `public/${src}`;
+                    imgHtml += `<img src="${finalSrc}" alt="memory">`;
+                });
+                imgHtml += `</div>`;
+            }
+            
+            let contentHtml = `<div class="card-content">${p.content}</div>`;
+            
+            let placeHtml = '';
+            if(p.place_name) {
+                placeHtml = `<div style="margin-top:15px; font-size:0.9rem; color:#888;">📍 ${p.place_name}</div>`;
+            }
+            
+            let actionHtml = '';
+            if(p.canEdit) {
+                actionHtml = `
+                    <div style="margin-top:15px; display:flex; gap:8px; justify-content:flex-end;">
+                        <button class="btn btn-secondary" onclick="location.href='views/post_edit.php?id=${p.id}'">✏️ 수정</button>
+                        <button class="btn btn-delete" onclick="if(confirm('정말 삭제할까요?')) location.href='post_delete.php?id=${p.id}'">🗑️ 삭제</button>
+                    </div>
+                `;
+            }
+            
+            card.innerHTML = headerHtml + imgHtml + contentHtml + placeHtml + actionHtml;
+            feedContainer.appendChild(card);
+        });
     }
   
     prevBtn.addEventListener('click', () => {
@@ -179,6 +191,20 @@
   
     // 초기 실행
     render();
+    
+    // 필터 버튼 이벤트 리스너
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // 활성화 상태 변경
+            filterBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // 카테고리 저장 및 재렌더링
+            activeCategory = this.dataset.category;
+            renderPosts(filterPosts(currentPosts, activeCategory));
+        });
+    });
     
     // 페이지 로드 시 오늘 날짜 자동 선택
     setTimeout(() => {

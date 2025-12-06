@@ -15,7 +15,10 @@ require_once 'includes/db.php';
     <!-- 헤더 -->
     <header>
         <div class="logo">
-            <a href="index.php"><h1>📒 LifeLog</h1></a>
+            <a href="index.php">
+                <img src="./public/images/logo.png" alt="LifeLog" class="logo-img">
+                <span class="logo-title">LifeLog</span>
+            </a>
         </div>
         
         <?php if (isset($_SESSION['user_id'])): ?>
@@ -67,21 +70,29 @@ require_once 'includes/db.php';
                     </div>
                 </aside>
 
-                <!-- 2. 오른쪽 피드 영역 (스크롤) -->
-                <section class="feed-area">
-                    <div class="feed-header">
-                        <h3 id="detailTitle">오늘의 기록 📝</h3>
-                    </div>
+            <!-- 2. 오른쪽 피드 영역 (스크롤) -->
+            <section class="feed-area">
+                <div class="feed-header">
+                    <h3 id="detailTitle">오늘의 기록 📝</h3>
                     
-                    <!-- 폴라로이드 카드들이 들어갈 컨테이너 -->
-                    <div id="feedContainer" class="post-list">
-                        <div class="empty-state">
-                            날짜를 클릭하면<br>이야기가 펼쳐집니다 ✨
-                        </div>
+                    <!-- 카테고리 필터 -->
+                    <div class="category-filter">
+                        <button class="filter-btn active" data-category="all">전체</button>
+                        <button class="filter-btn" data-category="맛집">🍴 맛집</button>
+                        <button class="filter-btn" data-category="카페">☕ 카페</button>
+                        <button class="filter-btn" data-category="여행">✈️ 여행</button>
+                        <button class="filter-btn" data-category="취미">🎨 취미</button>
+                        <button class="filter-btn" data-category="일상">📝 일상</button>
                     </div>
-                </section>
-
-            </div>
+                </div>
+                
+                <!-- 폴라로이드 카드들이 들어갈 컨테이너 -->
+                <div id="feedContainer" class="post-list">
+                    <div class="empty-state">
+                        날짜를 클릭하면<br>이야기가 펼쳐집니다 ✨
+                    </div>
+                </div>
+            </section>            </div>
 
             <!-- 전체 기록 보기 -->
             <div id="listView" style="display:none; max-width: 1000px; margin: 40px auto; padding: 0 20px;">

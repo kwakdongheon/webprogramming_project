@@ -28,7 +28,10 @@ $photos = $img_stmt->fetchAll();
     <!-- 헤더 -->
     <header>
         <div class="logo">
-            <a href="../index.php"><h1>📒 LifeLog</h1></a>
+            <a href="../index.php">
+                <img src="../public/images/logo.png" alt="LifeLog" class="logo-img">
+                <span class="logo-title">LifeLog</span>
+            </a>
         </div>
         <div class="user-info">
             <span class="user-badge">@<?php echo htmlspecialchars($_SESSION['username']); ?></span>
