@@ -311,7 +311,7 @@ chmod 755 public/uploads
 - ✅ 과거 평문 비밀번호 자동 해시 업그레이드
 - ✅ 카테고리별 필터링 UI
 - ✅ 게시글 수정 시 사진 추가/삭제 기능
-- ❌ Kakao Maps API 통합 제거 -> Openstreetapi 
+- ✅ Photon API 기반 지도 검색 (Leaflet + OpenStreetMap) 
 
 ### 향후 개선 계획
 - [ ] 이미지 썸네일 자동 생성 (GD 라이브러리)
