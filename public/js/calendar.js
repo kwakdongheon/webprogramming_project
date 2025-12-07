@@ -60,6 +60,7 @@
         const cell = document.createElement('div');
         cell.className = 'day-cell';
         cell.textContent = d;
+        cell.dataset.day = d; // 날짜를 data 속성으로 저장
   
         // 게시글 있으면 점 표시
         if (activeDates.includes(d)) {
@@ -80,6 +81,47 @@
 
         grid.appendChild(cell);
       }
+      
+      // 렌더링 완료 후 오늘 날짜 자동 선택 (최초 1회만)
+      if (!selectedDateElem) {
+        selectTodayOrFirst(year, month);
+      }
+    }
+    
+    // 오늘 날짜 또는 첫 번째 날짜 선택 함수
+    function selectTodayOrFirst(year, month) {
+        const today = new Date();
+        const isCurrentMonth = (today.getFullYear() === year && today.getMonth() === month);
+        const todayDay = today.getDate();
+        const dayCells = document.querySelectorAll('.day-cell:not(.empty)');
+        
+        console.log('=== 오늘 날짜 찾기 ===');
+        console.log('현재 달:', year, month + 1);
+        console.log('오늘:', todayDay, '현재 달인지:', isCurrentMonth);
+        console.log('전체 셀 개수:', dayCells.length);
+        
+        let found = false;
+        
+        if (isCurrentMonth) {
+            dayCells.forEach(cell => {
+                const cellDay = parseInt(cell.dataset.day);
+                if (cellDay === todayDay) {
+                    cell.classList.add('selected');
+                    selectedDateElem = cell;
+                    loadDay(year, month + 1, todayDay);
+                    found = true;
+                }
+            });
+        }
+        
+        if (!found && dayCells.length > 0) {
+            console.log('오늘 날짜 셀을 찾지 못했습니다. 첫 번째 날짜를 선택합니다.');
+            const firstCell = dayCells[0];
+            const firstDay = parseInt(firstCell.dataset.day);
+            firstCell.classList.add('selected');
+            selectedDateElem = firstCell;
+            loadDay(year, month + 1, firstDay);
+        }
     }
   
     // ★ 폴라로이드 카드 생성 로직 ★
@@ -116,7 +158,7 @@
     // 카테고리 필터링 함수
     function filterPosts(posts, category) {
         if (category === 'all') return posts;
-        return posts.filter(post => post.category === category);
+        return posts.filter(post => (post.category || '기타') === category);
     }
     
     // 게시글 렌더링 함수
@@ -143,7 +185,7 @@
                     <div class="card-title">${p.title || '무제'}</div>
                     <div class="card-meta">
                         <span class="rating-star">${'★'.repeat(p.rating)}</span> | 
-                        <span>${p.category}</span>
+                        <span>${p.category || '기타'}</span>
                     </div>
                 </div>`;
             
@@ -205,34 +247,4 @@
             renderPosts(filterPosts(currentPosts, activeCategory));
         });
     });
-    
-    // 페이지 로드 시 오늘 날짜 자동 선택
-    setTimeout(() => {
-        const today = new Date();
-        const todayDay = today.getDate();
-        const dayCells = document.querySelectorAll('.day-cell:not(.empty)');
-        
-        let found = false;
-        dayCells.forEach(cell => {
-            const cellText = cell.childNodes[0]?.textContent || cell.textContent;
-            if (cellText.trim() === todayDay.toString()) {
-                if(selectedDateElem) selectedDateElem.classList.remove('selected');
-                cell.classList.add('selected');
-                selectedDateElem = cell;
-                loadDay(today.getFullYear(), today.getMonth() + 1, todayDay);
-                found = true;
-            }
-        });
-        
-        if (!found) {
-            console.log('오늘 날짜 셀을 찾지 못했습니다. 첫 번째 날짜를 선택합니다.');
-            if (dayCells.length > 0) {
-                const firstCell = dayCells[0];
-                const firstDay = parseInt(firstCell.childNodes[0]?.textContent || firstCell.textContent);
-                firstCell.classList.add('selected');
-                selectedDateElem = firstCell;
-                loadDay(today.getFullYear(), today.getMonth() + 1, firstDay);
-            }
-        }
-    }, 100);
 })();

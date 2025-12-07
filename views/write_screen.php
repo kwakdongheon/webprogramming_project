@@ -66,6 +66,7 @@ require_once '../includes/db.php';
                         <option value="여행">✈️ 즐거운 여행</option>
                         <option value="취미">🎨 나만의 취미</option>
                         <option value="일상">📝 소소한 일상</option>
+                        <option value="기타">📦 기타</option>
                     </select>
                 </div>
 

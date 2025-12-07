@@ -83,6 +83,7 @@ require_once 'includes/db.php';
                         <button class="filter-btn" data-category="여행">✈️ 여행</button>
                         <button class="filter-btn" data-category="취미">🎨 취미</button>
                         <button class="filter-btn" data-category="일상">📝 일상</button>
+                        <button class="filter-btn" data-category="기타">📦 기타</button>
                     </div>
                 </div>
                 
@@ -96,17 +97,33 @@ require_once 'includes/db.php';
 
             <!-- 전체 기록 보기 -->
             <div id="listView" style="display:none; max-width: 1000px; margin: 40px auto; padding: 0 20px;">
-                <h2 style="font-size: 2rem; color: var(--secondary); margin-bottom: 30px;">📋 나의 모든 기록</h2>
+                <h2 style="font-size: 2rem; color: var(--secondary); margin-bottom: 20px;">📋 나의 모든 기록</h2>
+                
+                <!-- 카테고리 필터 (전체 기록용) -->
+                <div class="category-filter" style="margin-bottom: 30px;">
+                    <button class="filter-btn active" data-list-category="all">전체</button>
+                    <button class="filter-btn" data-list-category="맛집">🍴 맛집</button>
+                    <button class="filter-btn" data-list-category="카페">☕ 카페</button>
+                    <button class="filter-btn" data-list-category="여행">✈️ 여행</button>
+                    <button class="filter-btn" data-list-category="취미">🎨 취미</button>
+                    <button class="filter-btn" data-list-category="일상">📝 일상</button>
+                    <button class="filter-btn" data-list-category="기타">📦 기타</button>
+                </div>
+                
                 <div id="allPostsContainer"></div>
             </div>
             
             <script>
                 // 뷰 전환 함수
                 function switchView(view) {
+                    console.log('switchView 호출됨:', view);
+                    
                     const calendarView = document.getElementById('calendarView');
                     const listView = document.getElementById('listView');
                     const calendarToggle = document.getElementById('calendarToggle');
                     const listToggle = document.getElementById('listToggle');
+                    
+                    console.log('Elements:', { calendarView, listView, calendarToggle, listToggle });
                     
                     if (view === 'calendar') {
                         calendarView.style.display = 'grid';
@@ -122,6 +139,10 @@ require_once 'includes/db.php';
                     }
                 }
                 
+                // 전역 변수로 전체 게시글 저장
+                let allPosts = [];
+                let activeListCategory = 'all';
+                
                 // 모든 기록 로드 함수
                 async function loadAllPosts() {
                     const container = document.getElementById('allPostsContainer');
@@ -131,62 +152,98 @@ require_once 'includes/db.php';
                         if (!response.ok) throw new Error('Failed to load posts');
                         
                         const data = await response.json();
-                        const posts = data.posts || [];
+                        allPosts = data.posts || [];
                         
-                        if (posts.length === 0) {
-                            container.innerHTML = `
-                                <div class="empty-state" style="margin-top: 60px;">
-                                    <div style="font-size: 4rem; margin-bottom: 20px;">📝</div>
-                                    <p style="font-size: 1.2rem;">작성된 기록이 없습니다.</p>
-                                    <button class="btn btn-secondary" style="margin-top: 20px;" onclick="location.href='views/write_screen.php'">첫 기록 시작하기</button>
-                                </div>`;
-                            return;
-                        }
+                        // 필터링된 게시글 렌더링
+                        renderAllPosts(filterAllPosts(allPosts, activeListCategory));
                         
-                        let html = '<div class="post-list" style="flex-direction: column; gap: 20px;">';
-                        
-                        posts.forEach(p => {
-                            html += `
-                                <div class="polaroid-card" style="min-width: 100%; max-width: 100%;">
-                                    <div class="card-header">
-                                        <div class="card-title">${p.title || '[제목 없음]'}</div>
-                                        <div class="card-meta">
-                                            <span class="rating-star">${'★'.repeat(p.rating)}</span> | 
-                                            <span>${p.category || '기타'}</span>
-                                        </div>
-                                    </div>`;
-                            
-                            if (p.images && p.images.length > 0) {
-                                html += '<div class="photo-scroller">';
-                                p.images.forEach(src => {
-                                    const finalSrc = src.startsWith('public/') ? src : 'public/' + src;
-                                    html += `<img src="${finalSrc}" alt="memory">`;
-                                });
-                                html += '</div>';
-                            }
-                            
-                            html += `<div class="card-content">${p.content}</div>`;
-                            
-                            if (p.place_name) {
-                                html += `<div style="margin-top:15px; font-size:0.9rem; color:#888;">📍 ${p.place_name}</div>`;
-                            }
-                            
-                            html += `
-                                <div style="margin-top:20px; text-align:right;">
-                                    <a href="views/post_view.php?id=${p.id}" class="btn btn-secondary" style="font-size:0.8rem; padding:6px 12px;">보기</a>
-                                    <a href="views/post_edit.php?id=${p.id}" class="btn btn-secondary" style="font-size:0.8rem; padding:6px 12px;">수정</a>
-                                    <button class="btn btn-delete" style="font-size:0.8rem; padding:6px 12px;" onclick="if(confirm('정말 삭제할까요?')) location.href='post_delete.php?id=${p.id}'">삭제</button>
-                                </div>
-                            </div>`;
-                        });
-                        
-                        html += '</div>';
-                        container.innerHTML = html;
+                        // 필터 버튼 이벤트 리스너 추가 (한 번만)
+                        setupListFilters();
                         
                     } catch (error) {
                         console.error('Error loading posts:', error);
                         container.innerHTML = '<div class="empty-state">오류가 발생했습니다 😭</div>';
                     }
+                }
+                
+                // 전체 기록 필터링 함수
+                function filterAllPosts(posts, category) {
+                    if (category === 'all') return posts;
+                    return posts.filter(post => (post.category || '기타') === category);
+                }
+                
+                // 전체 기록 렌더링 함수
+                function renderAllPosts(posts) {
+                    const container = document.getElementById('allPostsContainer');
+                    
+                    if (posts.length === 0) {
+                        container.innerHTML = `
+                            <div class="empty-state" style="margin-top: 60px;">
+                                <div style="font-size: 4rem; margin-bottom: 20px;">📝</div>
+                                <p style="font-size: 1.2rem;">해당 카테고리의 기록이 없습니다.</p>
+                            </div>`;
+                        return;
+                    }
+                    
+                    let html = '<div class="post-list" style="flex-direction: column; gap: 20px;">';
+                    
+                    posts.forEach(p => {
+                        html += `
+                            <div class="polaroid-card" style="min-width: 100%; max-width: 100%;">
+                                <div class="card-header">
+                                    <div class="card-title">${p.title || '[제목 없음]'}</div>
+                                    <div class="card-meta">
+                                        <span class="rating-star">${'★'.repeat(p.rating)}</span> | 
+                                        <span>${p.category || '기타'}</span>
+                                    </div>
+                                </div>`;
+                        
+                        if (p.images && p.images.length > 0) {
+                            html += '<div class="photo-scroller">';
+                            p.images.forEach(src => {
+                                const finalSrc = src.startsWith('public/') ? src : 'public/' + src;
+                                html += `<img src="${finalSrc}" alt="memory">`;
+                            });
+                            html += '</div>';
+                        }
+                        
+                        html += `<div class="card-content">${p.content}</div>`;
+                        
+                        if (p.place_name) {
+                            html += `<div style="margin-top:15px; font-size:0.9rem; color:#888;">📍 ${p.place_name}</div>`;
+                        }
+                        
+                        html += `
+                            <div style="margin-top:20px; text-align:right;">
+                                <a href="views/post_view.php?id=${p.id}" class="btn btn-secondary" style="font-size:0.8rem; padding:6px 12px;">보기</a>
+                                <a href="views/post_edit.php?id=${p.id}" class="btn btn-secondary" style="font-size:0.8rem; padding:6px 12px;">수정</a>
+                                <button class="btn btn-delete" style="font-size:0.8rem; padding:6px 12px;" onclick="if(confirm('정말 삭제할까요?')) location.href='post_delete.php?id=${p.id}'">삭제</button>
+                            </div>
+                        </div>`;
+                    });
+                    
+                    html += '</div>';
+                    container.innerHTML = html;
+                }
+                
+                // 전체 기록 필터 버튼 설정
+                let listFiltersSetup = false;
+                function setupListFilters() {
+                    if (listFiltersSetup) return;
+                    listFiltersSetup = true;
+                    
+                    const listFilterBtns = document.querySelectorAll('[data-list-category]');
+                    listFilterBtns.forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            // 활성화 상태 변경
+                            listFilterBtns.forEach(b => b.classList.remove('active'));
+                            this.classList.add('active');
+                            
+                            // 카테고리 저장 및 재렌더링
+                            activeListCategory = this.dataset.listCategory;
+                            renderAllPosts(filterAllPosts(allPosts, activeListCategory));
+                        });
+                    });
                 }
             </script>
             

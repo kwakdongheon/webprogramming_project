@@ -27,12 +27,13 @@ try {
     // 1. 게시글 기본 정보 업데이트
     $title = $_POST['title'];
     $rating = intval($_POST['rating']);
+    $category = $_POST['category'];
     $content = $_POST['content'];
     $place_name = !empty($_POST['place_name']) ? $_POST['place_name'] : null;
     $place_address = !empty($_POST['place_address']) ? $_POST['place_address'] : null;
     
-    $update_stmt = $conn->prepare("UPDATE posts SET title=?, rating=?, content=?, place_name=?, place_address=? WHERE id=?");
-    $update_stmt->bind_param("sisssi", $title, $rating, $content, $place_name, $place_address, $id);
+    $update_stmt = $conn->prepare("UPDATE posts SET title=?, rating=?, category=?, content=?, place_name=?, place_address=? WHERE id=?");
+    $update_stmt->bind_param("sissssi", $title, $rating, $category, $content, $place_name, $place_address, $id);
     $update_stmt->execute();
     
     // 2. 삭제할 사진 처리

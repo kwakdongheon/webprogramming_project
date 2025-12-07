@@ -75,6 +75,18 @@ $existing_photos = $img_stmt->fetchAll();
                 </div>
 
                 <div class="form-group">
+                    <label>카테고리</label>
+                    <select name="category">
+                        <option value="맛집" <?=$post['category']=='맛집' ? 'selected' : ''?>>🍴 맛집 탐방</option>
+                        <option value="카페" <?=$post['category']=='카페' ? 'selected' : ''?>>☕ 예쁜 카페</option>
+                        <option value="여행" <?=$post['category']=='여행' ? 'selected' : ''?>>✈️ 즐거운 여행</option>
+                        <option value="취미" <?=$post['category']=='취미' ? 'selected' : ''?>>🎨 나만의 취미</option>
+                        <option value="일상" <?=$post['category']=='일상' ? 'selected' : ''?>>📝 소소한 일상</option>
+                        <option value="기타" <?=$post['category']=='기타' ? 'selected' : ''?>>📦 기타</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
                     <label>내용</label>
                     <textarea name="content" rows="8" required><?=htmlspecialchars($post['content'])?></textarea>
                 </div>
