@@ -1,6 +1,6 @@
 <?php
-require_once 'auth_guard.php';
-require_once 'db.php';
+require_once 'includes/auth_guard.php';
+require_once 'includes/db.php';
 
 $id = $_GET['id'];
 
