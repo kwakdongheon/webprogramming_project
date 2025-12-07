@@ -5,6 +5,9 @@
   <h3>  
     LifeLog: 일상 기록 중심의 캘린더 기반 장소 로깅 서비스
   </h3>
+
+### 🔗 [LifeLog 서비스 바로가기](https://placelog2025.42web.io/index.php)
+
 </div>
 
 ---
